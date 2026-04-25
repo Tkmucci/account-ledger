@@ -9,14 +9,13 @@ public class AccountLedger {
     private String date;
 
 
-    public AccountLedger(String desc, double amt, String vend, String time, String date) {
+    public AccountLedger( String date,String time , String desc,String vend, double amt) {
 
-        this.description = desc;
-        this.amount = amt;
-        this.vendor = vend;
-        this.timestamp = time;
         this.date = date;
-
+        this.timestamp = time;
+        this.description = desc;
+        this.vendor = vend;
+        this.amount = amt;
     }
 
     public String getDescription() {
