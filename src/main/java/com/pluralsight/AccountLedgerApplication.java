@@ -21,7 +21,7 @@ public class AccountLedgerApplication {
     static String currentDate = currentDateTime.toLocalDate().toString();
     static String currentTime = currentDateTime.toLocalTime().toString();
     static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
+    static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 
     public static void main(String[] args) {
@@ -213,6 +213,14 @@ public class AccountLedgerApplication {
         System.out.println("Current Date: " + currentDate);
         System.out.println("Current Time: " + currentTime);
 
+        System.out.println("Enter Description: ");
+        String description = userInput.nextLine();
+        System.out.println("Enter Vendor: ");
+        String vendor = userInput.nextLine();
+        System.out.println("Enter Amount: ");
+        double amount = userInput.nextDouble();
+        userInput.nextLine();
+
 
 
 //        System.out.println("Enter Description: ");
@@ -221,6 +229,9 @@ public class AccountLedgerApplication {
 //        String vendor = userInput.nextLine();
 //        System.out.println("Enter Amount: ");
 //        double amount = userInput.nextDouble();
+
+        ledgerList.add(new AccountLedger(currentDate, currentTime, description, vendor, amount));
+        System.out.println("Deposit added successfully.");
 
 
     }
