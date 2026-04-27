@@ -18,8 +18,8 @@ public class AccountLedgerApplication {
     static String readFileName;
     static int counter = 0;
     static ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("America/Chicago"));
-    static String currentDate = currentDateTime.toLocalDate().toString();
-    static String currentTime = currentDateTime.toLocalTime().toString();
+    static String currentDate = currentDateTime.toString();
+    static String currentTime = currentDateTime.toString();
     static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
     static DateTimeFormatter monthFormat = DateTimeFormatter.ofPattern("yyyy-MM-01");
@@ -63,6 +63,7 @@ public class AccountLedgerApplication {
 
             //Pausing the application for a moment before displaying the main menu again.
             //notifying the user that they are about to return to the main menu.
+            System.out.println("\nReturning to the Home Screen...");
             System.out.println("Press Enter to continue.");
             userInput.nextLine();
 
@@ -186,6 +187,8 @@ public class AccountLedgerApplication {
 
     }
 
+    //getBufferedWriter method that will return a BufferedWriter object
+    // that is used to write the ledger-updated data to a file.
     private static BufferedWriter getBufferedWriter() throws IOException {
         BufferedWriter bufWriter = new BufferedWriter(
                 new FileWriter("src/main/resources/" + readFileName));
@@ -206,29 +209,109 @@ public class AccountLedgerApplication {
     //The method that I will use to add a deposit and a payment to the ledger.
     static void addDeposit() {
 
+        System.out.println("\nAdding a Deposit to the Ledger.");
+
+        //My big while loop that will keep the user from exiting the application until they choose to.
         while (true) {
+
             //Asking the user to enter the details of the deposit and then adding it to the ledgerList.
-            //currentDate = dateFormat.format(currentDateTime.toLocalDate());
-            currentTime = currentDateTime.toLocalTime().format(timeFormat);
-            currentDate = currentDateTime.toLocalDate().format(dateFormat);
+            //below I'm getting the current date and time and formatting them into a string.
+            //so I can add them to the deposit automatically as the user enters the details.
+            currentTime = currentDateTime.format(timeFormat);
+            currentDate = currentDateTime.format(dateFormat);
 
-            System.out.println("Enter Description: ");
-            String description = userInput.nextLine();
-            System.out.println("Enter Vendor: ");
-            String vendor = userInput.nextLine();
-            System.out.println("Enter Amount: ");
-            double amount = userInput.nextDouble();
-            userInput.nextLine();
+            //Getting the user's input for the deposit details.
+            //Using a do-while loop to validate the input.
+            String description;
+            String vendor;
+            double amount;
+
+            do {
+
+                System.out.print("\nEnter Description: ");
+                description = userInput.nextLine();
+
+                if (description.isEmpty()) {
+
+                    System.out.println("\n⚠️ Description cannot be empty.");
+                    System.out.println("Try again.\n");
+                }
+
+            } while (description.isEmpty());
+
+            do {
+
+                System.out.print("Enter Vendor: ");
+                vendor = userInput.nextLine();
+
+                if (vendor.isEmpty()) {
+
+                    System.out.println("\n⚠️ Vendor name cannot be empty.");
+                    System.out.println("Try again.\n");
+                }
+
+            } while (vendor.isEmpty());
+
+            do {
+
+                System.out.print("Enter Amount: $");
+                amount = userInput.nextDouble();
+                userInput.nextLine();
+
+                if (amount <= 0) {
+
+                    System.out.println("\n⚠️ Amount cannot be below zero.");
+                    System.out.println("Try again.\n");
+                }
+            } while (amount <= 0);
+
+            //displaying the deposit details to the user and asking for confirmation
+            // before adding it to the ledgerList.
+            System.out.printf("\nYou are depositing $%.2f from %s", amount, vendor);
+            System.out.print("\nConfirm? (Y/N): ");
+            String userDepositInput = userInput.nextLine();
+
+            //checking if the user wants to add the deposit to the ledgerList with a simple if-else statement
+            // and then adding it to the ledgerList if they confirm or cancelling the transaction if they do not confirm.
+            if (userDepositInput.equalsIgnoreCase("Y") || userDepositInput.equalsIgnoreCase("YES")) {
+
+                System.out.println("\nProcessing deposit information...");
+                ledgerList.add(new AccountLedger(currentDate, currentTime, description, vendor, amount));
+                System.out.println("Deposit added successfully.");
+
+            } else if (userDepositInput.equalsIgnoreCase("N") || userDepositInput.equalsIgnoreCase("NO")) {
+
+                System.out.println("\nDeposit transaction cancelled.");
+
+            } else {
+
+                System.out.println("\nInvalid input. Please enter Y for Yes or N for No.");
+
+                System.out.println("\nTransaction cancelled");
+
+                System.out.println("\nTry entering the information again.\n");
+                addDeposit();
+            }
 
 
-            ledgerList.add(new AccountLedger(currentDate, currentTime, description, vendor, amount));
-            System.out.println("Deposit added successfully.");
+            //Giving the user the option to make another deposit or exit the application.
+            System.out.print("\nWould you like to make another deposit? (Y/N): ");
+            String userInputString = userInput.nextLine();
 
-            System.out.println("Would you like to make another deposit? (Y/N)");
-            String userInputString = userInput.nextLine().toUpperCase();
 
+            //if the user chooses to make another deposit, the loop will continue.
+            if (userInputString.equalsIgnoreCase("Yes") || userInputString.equalsIgnoreCase("Y")) {
+
+                continue;
+            }
             if (userInputString.equalsIgnoreCase("N") || userInputString.equalsIgnoreCase("NO")) {
                 return;
+            } else {
+
+                System.out.println("\nInvalid input. Please enter Y for Yes or N for No.");
+
+                System.out.println("\nTry entering the information again.\n");
+                addDeposit();
             }
         }
 
@@ -237,28 +320,109 @@ public class AccountLedgerApplication {
     //The method that I will use to make a payment to the ledger.
     static void makePayment() {
 
+        System.out.println("\nMaking a Payment to the Ledger.");
+
+        //My big while loop that will keep the user from exiting the application until they choose to.
         while (true) {
 
+            //Asking the user to enter the details of the payment and then adding it to the ledgerList.
+            //below I'm getting the current date and time and formatting them into a string.
+            // so I can add them to the payment automatically as the user enters the details.
             currentTime = currentDateTime.toLocalTime().format(timeFormat);
             currentDate = currentDateTime.toLocalDate().format(dateFormat);
 
-            System.out.println("Enter Description: ");
-            String description = userInput.nextLine();
-            System.out.println("Enter Vendor: ");
-            String vendor = userInput.nextLine();
-            System.out.println("Enter Amount: ");
-            double amount = userInput.nextDouble();
-            userInput.nextLine();
+            //Getting the user's input for the payment details.
+            //Using a do-while loop to validate the input.
+            String description;
+            String vendor;
+            double amount;
 
-            ledgerList.add(new AccountLedger(currentDate, currentTime, description, vendor, -amount));
 
-            System.out.println("Payment made successfully.");
+            do {
 
-            System.out.println("Would you like to make another payment? (Y/N)");
-            String userInputString = userInput.nextLine().toUpperCase();
+                System.out.print("\nEnter Description: ");
+                description = userInput.nextLine();
 
+                if (description.isEmpty()) {
+
+                    System.out.println("\n⚠️ Description cannot be empty.");
+                    System.out.println("Try again.\n");
+                }
+
+            } while (description.isEmpty());
+
+            do {
+
+                System.out.print("Enter Vendor: ");
+                vendor = userInput.nextLine();
+
+                if (vendor.isEmpty()) {
+
+                    System.out.println("\n⚠️ Vendor name cannot be empty.");
+                    System.out.println("Try again.\n");
+                }
+
+            } while (vendor.isEmpty());
+
+            do {
+
+                System.out.print("Enter Amount: $");
+                amount = userInput.nextDouble();
+                userInput.nextLine();
+
+                if (amount <= 0) {
+
+                    System.out.println("\n⚠️ Amount cannot be below zero.");
+                    System.out.println("Try again.\n");
+                }
+            } while (amount <= 0);
+
+            //displaying the payment details to the user and asking for confirmation before
+            // adding it to the ledgerList.
+            System.out.printf("\nYou are making a payment to %s for $%.2f", vendor, amount);
+            System.out.print("\nAre you sure you want to proceed? (Y/N): ");
+            String userPaymentInput = userInput.nextLine();
+
+            //checking if the user wants to add the payment to the ledgerList with a simple if-else statement
+            // and then adding it to the ledgerList if they confirm or cancelling the transaction if they do not confirm.
+            if (userPaymentInput.equalsIgnoreCase("Y") || userPaymentInput.equalsIgnoreCase("YES")) {
+
+                System.out.println("\nProcessing payment...");
+                ledgerList.add(new AccountLedger(currentDate, currentTime, description, vendor, -amount));
+                System.out.println("Payment made successfully.");
+
+            } else if (userPaymentInput.equalsIgnoreCase("N") || userPaymentInput.equalsIgnoreCase("NO")) {
+
+                System.out.println("\nPayment cancelled.");
+
+            } else {
+
+                System.out.println("\nInvalid input. Please enter Y for Yes or N for No.");
+
+                System.out.println("\nTransaction cancelled");
+
+                System.out.println("\nTry entering the information again.\n");
+                makePayment();
+            }
+
+            //Giving the user the option to make another payment or exit the application.
+            System.out.print("\nWould you like to make another payment? (Y/N): ");
+            String userInputString = userInput.nextLine();
+
+
+            //Checking if the user wants to make another payment or exit the application with a simple if-else statement.
+            if (userInputString.equalsIgnoreCase("Yes") || userInputString.equalsIgnoreCase("Y")) {
+
+                continue;
+            }
             if (userInputString.equalsIgnoreCase("N") || userInputString.equalsIgnoreCase("NO")) {
                 return;
+            } else {
+
+                System.out.println("\nInvalid input. Please enter Y for Yes or N for No.");
+
+                System.out.println("\nTry entering the information again.\n");
+                makePayment();
             }
         }
 
@@ -271,7 +435,7 @@ public class AccountLedgerApplication {
         while (true) {
 
             System.out.println("""
-                    Ledger:
+                    Ledger Menu:
                     A) All
                     D) Deposits
                     P) Payments
@@ -291,10 +455,11 @@ public class AccountLedgerApplication {
                 case "H" -> {
                     return;
                 }
-                default -> System.out.println("Invalid choice. Please try again.");
+                default -> System.out.println("\nInvalid choice. Please try again.");
             }
 
             //Pausing the application for a moment before displaying the main menu again.
+            System.out.println("\nReturning to the Ledger Menu...");
             System.out.println("Press Enter to continue.");
             userInput.nextLine();
         }
@@ -312,11 +477,11 @@ public class AccountLedgerApplication {
             }
         }
 
-        System.out.println("\nDisplaying all ledger " + counter + " entries.\n");
+        System.out.println("\nDisplaying all " + counter + " ledger entries.\n");
 
         //Checking if the ledger is empty.
         if (ledgerList.isEmpty()) {
-            System.out.println("No entries in the ledger.");
+            System.out.println("No entries in the ledger. Do a few transactions and come back to see them here.");
             return;
         }
 
@@ -337,6 +502,9 @@ public class AccountLedgerApplication {
 
     //The method that I will use to display the ledger entries that are deposits.
     static void displayDeposits() {
+
+        //initializing a counter-variable to keep track of the number of deposits.
+        counter = 0;
 
         //counting the number of deposits in the ledger.
         for (AccountLedger ledgerEntry : ledgerList) {
@@ -373,6 +541,9 @@ public class AccountLedgerApplication {
 
     //the method that I will use to display the ledger entries that are payments (only the negative entries).
     static void displayPayments() {
+
+        //initializing a counter-variable to keep track of the number of payments.
+        counter = 0;
 
         //counting the number of payments in the ledger.
         for (AccountLedger ledgerEntry : ledgerList) {
@@ -445,43 +616,60 @@ public class AccountLedgerApplication {
         }
     }
 
+    //My method for filtering ledger entries by month-to-date.
     static void monthToDateFilter() {
 
-        System.out.println("Displaying Month To Date Report features coming soon.");
+        //Letting the user know that they are viewing month-to-date report(s).
+        System.out.println("Displaying Month To Date Report(s).\n");
 
-        String monthStart = currentDateTime.toLocalDate().format(monthFormat);
-        currentDate = currentDateTime.toLocalDate().format(dateFormat);
+        //formatting the current date and time into a string.
+        String monthStart = currentDateTime.format(monthFormat);
+        currentDate = currentDateTime.format(dateFormat);
 
+        //formatting the month number into a string. using my hashmap to match the month number to a string.
         System.out.println("\nDisplaying ledger entries between " + monthStart + " and " + currentDate + ".\n");
 
-        //setting the boolean variable too false to check if any entries are
+        //setting the boolean variable equal false to check if any entries are
         // found in the specified month range.
         boolean found = false;
 
+        //using a for loop to iterate through the ledgerList and check if the date matches the monthStart.
         for (AccountLedger daySearchFilter : ledgerList) {
 
             //getting the day number from the date string and then splitting
             // it to get the day part and then parsing it to an integer so we
             // can compare it to the dayStart and dayEnd.
+            int currentYear = Integer.parseInt(daySearchFilter.getDate().split("-")[0]);
+            int currentMonth = Integer.parseInt(daySearchFilter.getDate().split("-")[1]);
             int dayNumber = Integer.parseInt(daySearchFilter.getDate().split("-")[2]);
             int startDay = 1;
-            int endDay = currentDateTime.toLocalDate().getDayOfMonth();
+            int endDay = currentDateTime.getDayOfMonth();
 
-            //checking if the day number is in the specified range.
-            if (dayNumber >= startDay && dayNumber <= endDay) {
+            //checking if the year matches the current year with an if statement.
+            if (currentYear == currentDateTime.getYear()) {
 
-                //setting the boolean variable to true if any entries are found in the specified month range.
-                found = true;
 
-                //Printing the ledger entries that are in the specified month range.
-                System.out.printf("""
-                                %s | %s | %s | %s | %.2f
-                                """
-                        , daySearchFilter.getDate()
-                        , daySearchFilter.getTimestamp()
-                        , daySearchFilter.getDescription()
-                        , daySearchFilter.getVendor()
-                        , daySearchFilter.getAmount());
+                //checking if the month number matches the current month with an if statement.
+                if (currentDateTime.getMonthValue() == currentMonth) {
+
+                    //checking if the day number is in the specified range.
+                    if (dayNumber >= startDay && dayNumber <= endDay) {
+
+                        //setting the boolean variable to true if any entries are found in the specified month range.
+                        found = true;
+
+                        //Printing the ledger entries that are in the specified month range.
+                        System.out.printf("""
+                                        %s | %s | %s | %s | %.2f
+                                        """
+                                , daySearchFilter.getDate()
+                                , daySearchFilter.getTimestamp()
+                                , daySearchFilter.getDescription()
+                                , daySearchFilter.getVendor()
+                                , daySearchFilter.getAmount());
+
+                    }
+                }
 
             }
 
@@ -515,35 +703,175 @@ public class AccountLedgerApplication {
 
     }
 
+    //My method that I will use to display the previous month report(s)
+    // and filter the ledger entries by the previous month.
     static void previousMonthFilter() {
-        System.out.println("Displaying Previous Month Report features coming soon.");
-    }
 
-    static void yearToDateFilter() {
-        System.out.println("Displaying Year To Date Report features coming soon.");
+        //Letting the user know that they are viewing previous month report(s).
+        System.out.println("Displaying Previous Month Report(s).\n");
 
-        String yearStart = currentDateTime.toLocalDate().format(yearFormat);
-        currentDate = currentDateTime.toLocalDate().format(dateFormat);
+        //getting the month number from the current date and then formatting it into a string.
+        currentDate = currentDateTime.format(dateFormat);
+        monthsStrings();
+        int monthNumber = currentDateTime.getMonthValue();
 
-        System.out.println("\nDisplaying ledger entries between " + yearStart + " and " + currentDate + ".\n");
+        //Letting the user know which month they are viewing.
+        System.out.println("You are viewing " + monthsAndTheirCorrespondingNumbers.get(monthNumber - 1) + "'s entries:");
 
+        //setting the boolean variable to false to check if any entries are
+        // found in the specified month range.
         boolean found = false;
 
-        for (AccountLedger yearSearchFilter : ledgerList) {
+        //using a for loop to iterate through the ledgerList and check if the date matches the monthNumber.
+        for (AccountLedger daySearchFilter : ledgerList) {
 
-            //Will revisit this in the morning
-//            if ( ){
-//
-//
-//            }
+            //getting the month number from the date string and then splitting
+            // it to get the month part and then parsing it to an integer so we
+            // can compare it to the month number on record.
+            int currentYear = Integer.parseInt(daySearchFilter.getDate().split("-")[0]);
+            monthNumber = Integer.parseInt(daySearchFilter.getDate().split("-")[1]);
+
+            //checking if the year is current with an if statement.
+            if (currentYear == currentDateTime.getYear()) {
+
+
+                //checking if the month number is in the specified range.
+                if (monthNumber == currentDateTime.getMonthValue() - 1) {
+
+                    //setting the boolean variable to true if any entries are found in the specified month range.
+                    found = true;
+
+                    //Printing the ledger entries that are in the specified month range.
+                    System.out.printf("""
+                                    %s | %s | %s | %s | %.2f
+                                    """
+                            , daySearchFilter.getDate()
+                            , daySearchFilter.getTimestamp()
+                            , daySearchFilter.getDescription()
+                            , daySearchFilter.getVendor()
+                            , daySearchFilter.getAmount());
+
+                }
+            }
+
+        }
+        //Letting the user know if no entries were found in the specified month range.
+        if (!found) {
+
+            System.out.println("\nNo entries found in that range.");
 
         }
 
+        System.out.println("\n");
+
+    }
+
+    //My method that I will use to display the year-to-date report(s)
+    // and filter the ledger entries by the current year.
+    static void yearToDateFilter() {
+
+        //Letting the user know that they are viewing year-to-date report(s).
+        System.out.println("Displaying Year To Date Report features coming soon.");
+
+        //formatting the current date and time into a string.
+        String yearStart = currentDateTime.format(yearFormat);
+        currentDate = currentDateTime.format(dateFormat);
+
+        //formatting the current date and time into a string.
+        System.out.println("\nDisplaying ledger entries between " + yearStart + " and " + currentDate + ".\n");
+
+        //setting the boolean variable equal false to check if any entries are true
+        boolean found = false;
+
+        //using a for loop to iterate through the ledgerList and check if the date matches the yearStart.
+        for (AccountLedger yearSearchFilter : ledgerList) {
+
+            //getting the year number from the date string and then splitting it to get the
+            //year part and then parsing it to an integer so we can compare it to the year number on record.
+            int yearNumber = Integer.parseInt(yearSearchFilter.getDate().split("-")[0]);
+            int startYear = currentDateTime.getYear();
+
+            //checking if the year number is equal to the start year.
+            if (yearNumber == startYear) {
+
+                found = true;
+
+                System.out.printf("""
+                                %s | %s | %s | %s | %.2f
+                                """
+                        , yearSearchFilter.getDate()
+                        , yearSearchFilter.getTimestamp()
+                        , yearSearchFilter.getDescription()
+                        , yearSearchFilter.getVendor()
+                        , yearSearchFilter.getAmount());
+
+            }
+
+        }
+
+        //letting the user know if no entries were found in the specified year range.
+        if (!found) {
+            System.out.println("No entries found for the specified year.");
+        }
+
+        System.out.println("\n");
 
     }
 
     static void previousYearFilter() {
-        System.out.println("Displaying Previous Year Report features coming soon.");
+
+        //Letting the user know that they are viewing previous year report(s).
+        System.out.println("\nDisplaying Previous Year entries Report");
+
+        //formatting the current date and time into a string.
+        currentDate = currentDateTime.format(dateFormat);
+
+        int currentYear = currentDateTime.getYear();
+
+        //subtracting 1 from the current year to get the previous year.
+        System.out.println("\nYou are viewing " + (currentYear - 1) + "'s entries:");
+
+        //setting the boolean variable equal false to check if any entries are
+        // found in the specified year range.
+        boolean found = false;
+
+        //using a for loop to iterate through the ledgerList and check if the date matches the yearStart.
+        for (AccountLedger daySearchFilter : ledgerList) {
+
+            //getting the year number from the date string and then splitting
+            // it to get the year part and then parsing it to an integer so we
+            // can compare it to the year number on record.
+            currentYear = Integer.parseInt(daySearchFilter.getDate().split("-")[0]);
+
+            //checking if the month number is in the specified range.
+            if (currentYear == currentDateTime.getYear() - 1) {
+
+                //setting the boolean variable to true if any entries are found in the specified year range.
+                found = true;
+
+                //Printing the ledger entries that are in the specified year range.
+                System.out.printf("""
+                                %s | %s | %s | %s | %.2f
+                                """
+                        , daySearchFilter.getDate()
+                        , daySearchFilter.getTimestamp()
+                        , daySearchFilter.getDescription()
+                        , daySearchFilter.getVendor()
+                        , daySearchFilter.getAmount());
+
+            }
+
+
+        }
+        //Letting the user know if no entries were found in the specified year range.
+        if (!found) {
+
+            System.out.println("\nNo entries found in that range.");
+
+        }
+
+        System.out.println("\n");
+
     }
 
     //The method that I will use to search for entries by vendor name.
@@ -586,10 +914,12 @@ public class AccountLedgerApplication {
     //The method that I will use to search for entries by month.
     static void monthToMonthFilter() {
 
+        currentDate = currentDateTime.format(dateFormat);
+
         System.out.print("\nEnter start Month(number): ");
         int monthStart = userInput.nextInt();
 
-        System.out.println("Enter end Month(number): ");
+        System.out.print("Enter end Month(number): ");
         int monthEnd = userInput.nextInt();
         userInput.nextLine();
 
@@ -615,23 +945,27 @@ public class AccountLedgerApplication {
             // it to get the month part and then parsing it to an integer so we
             // can compare it to the monthStart and monthEnd.
             int monthNumber = Integer.parseInt(monthSearchFilter.getDate().split("-")[1]);
+            int currentYear = Integer.parseInt(monthSearchFilter.getDate().split("-")[0]);
 
-            //checking if the month number is in the specified range.
-            if (monthNumber >= monthStart && monthNumber <= monthEnd) {
+            if (currentYear == currentDateTime.getYear()) {
 
-                //setting the boolean variable to true if any entries are found in the specified month range.
-                found = true;
+                //checking if the month number is in the specified range.
+                if (monthNumber >= monthStart && monthNumber <= monthEnd) {
 
-                //Printing the ledger entries that are in the specified month range.
-                System.out.printf("""
-                                %s | %s | %s | %s | %.2f
-                                """
-                        , monthSearchFilter.getDate()
-                        , monthSearchFilter.getTimestamp()
-                        , monthSearchFilter.getDescription()
-                        , monthSearchFilter.getVendor()
-                        , monthSearchFilter.getAmount());
+                    //setting the boolean variable to true if any entries are found in the specified month range.
+                    found = true;
 
+                    //Printing the ledger entries that are in the specified month range.
+                    System.out.printf("""
+                                    %s | %s | %s | %s | %.2f
+                                    """
+                            , monthSearchFilter.getDate()
+                            , monthSearchFilter.getTimestamp()
+                            , monthSearchFilter.getDescription()
+                            , monthSearchFilter.getVendor()
+                            , monthSearchFilter.getAmount());
+
+                }
             }
 
         }
