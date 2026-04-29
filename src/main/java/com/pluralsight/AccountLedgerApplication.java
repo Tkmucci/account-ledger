@@ -34,13 +34,24 @@ public class AccountLedgerApplication {
         //Calling this method to load the ledger from a file.
         loadLedger();
 
+        //Calling this method to display the main menu.
+        mainMenu();
+
+    }
+
+    //main menu that will be used to display the Home Screen and it's options.
+    static void mainMenu() {
+
         //While loop that will keep the application running until the user exits.
         while (true) {
 
-            //Calling this method to display the main menu.
-            mainMenu();
-
-
+            System.out.println("""
+                    Home Screen:
+                    D) Add Deposit.
+                    P) Make Payment(Debit).
+                    L) View Ledger.
+                    X) Exit.
+                    """);
             System.out.print("Enter your choice: ");
             userInputString = userInput.nextLine().toUpperCase();
 
@@ -69,18 +80,6 @@ public class AccountLedgerApplication {
 
         }
 
-    }
-
-    //main menu that will be used to display the Home Screen and it's options.
-    static void mainMenu() {
-
-        System.out.println("""
-                Home Screen:
-                D) Add Deposit.
-                P) Make Payment(Debit).
-                L) View Ledger.
-                X) Exit.
-                """);
     }
 
     //The method that I will use to load the ledger from a file.
@@ -431,6 +430,8 @@ public class AccountLedgerApplication {
     //The method that I will use to display the ledger entries.
     static void displayLedger() {
 
+        System.out.println("\nDisplaying Ledger Entries.");
+
         //While loop that will keep the user from exiting the ledger until they choose to exit.
         while (true) {
 
@@ -620,7 +621,7 @@ public class AccountLedgerApplication {
     static void monthToDateFilter() {
 
         //Letting the user know that they are viewing month-to-date report(s).
-        System.out.println("Displaying Month To Date Report(s).\n");
+        System.out.println("\nDisplaying Month To Date Report(s).\n");
 
         //formatting the current date and time into a string.
         String monthStart = currentDateTime.format(monthFormat);
@@ -708,7 +709,7 @@ public class AccountLedgerApplication {
     static void previousMonthFilter() {
 
         //Letting the user know that they are viewing previous month report(s).
-        System.out.println("Displaying Previous Month Report(s).\n");
+        System.out.println("\nDisplaying Previous Month Report(s).\n");
 
         //getting the month number from the current date and then formatting it into a string.
         currentDate = currentDateTime.format(dateFormat);
@@ -771,7 +772,7 @@ public class AccountLedgerApplication {
     static void yearToDateFilter() {
 
         //Letting the user know that they are viewing year-to-date report(s).
-        System.out.println("Displaying Year To Date Report features coming soon.");
+        System.out.println("\nDisplaying Year To Date Report.");
 
         //formatting the current date and time into a string.
         String yearStart = currentDateTime.format(yearFormat);
@@ -877,6 +878,8 @@ public class AccountLedgerApplication {
     //The method that I will use to search for entries by vendor name.
     static void searchByVendorFilter() {
 
+        System.out.println("\nDisplaying Search By Vendor Report.");
+
         //Ask the user to enter the vendor name.
         System.out.print("Enter Vendor Name: ");
         String vendor = userInput.nextLine().trim();
@@ -913,6 +916,8 @@ public class AccountLedgerApplication {
 
     //The method that I will use to search for entries by month.
     static void monthToMonthFilter() {
+
+        System.out.println("\nDisplaying Search By Month Report.");
 
         currentDate = currentDateTime.format(dateFormat);
 
