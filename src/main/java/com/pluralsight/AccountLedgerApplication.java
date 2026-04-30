@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -194,6 +195,11 @@ public class AccountLedgerApplication {
         bufWriter.write("Date|Time|Description|Vendor|Amount\n");
 
         //Writing the updated ledger data to the file.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
         for (AccountLedger ledgerEntry : ledgerList) {
             bufWriter.write(String.format("%s|%s|%s|%s|%.2f\n",
                     ledgerEntry.getDate(),
@@ -227,6 +233,7 @@ public class AccountLedgerApplication {
 
             do {
 
+
                 System.out.print("\nEnter Description: ");
                 description = userInput.nextLine();
 
@@ -251,16 +258,29 @@ public class AccountLedgerApplication {
 
             } while (vendor.isEmpty());
 
+
             do {
 
-                System.out.print("Enter Amount: $");
-                amount = userInput.nextDouble();
-                userInput.nextLine();
+                try {
+                    System.out.print("Enter Amount: $");
+                    amount = userInput.nextDouble();
+                    userInput.nextLine();
 
-                if (amount <= 0) {
+                    if (amount <= 0) {
 
-                    System.out.println("\n⚠️ Amount cannot be below zero.");
+                        System.out.println("\n⚠️ Amount cannot be below zero.");
+                        System.out.println("Try again.\n");
+
+                    }
+                } catch (Exception e) {
+                    System.out.println("\n⚠️ Invalid input. Please enter a valid number for the amount.");
                     System.out.println("Try again.\n");
+
+                    // Clear the invalid input
+                    userInput.nextLine();
+
+                    // Set amount to an invalid value to continue the loop
+                    amount = -1;
                 }
             } while (amount <= 0);
 
@@ -365,14 +385,26 @@ public class AccountLedgerApplication {
 
             do {
 
-                System.out.print("Enter Amount: $");
-                amount = userInput.nextDouble();
-                userInput.nextLine();
+                try {
+                    System.out.print("Enter Amount: $");
+                    amount = userInput.nextDouble();
+                    userInput.nextLine();
 
-                if (amount <= 0) {
+                    if (amount <= 0) {
 
-                    System.out.println("\n⚠️ Amount cannot be below zero.");
+                        System.out.println("\n⚠️ Amount cannot be below zero.");
+                        System.out.println("Try again.\n");
+
+                    }
+                } catch (Exception e) {
+                    System.out.println("\n⚠️ Invalid input. Please enter a valid number for the amount.");
                     System.out.println("Try again.\n");
+
+                    // Clear the invalid input
+                    userInput.nextLine();
+
+                    // Set amount to an invalid value to continue the loop
+                    amount = -1;
                 }
             } while (amount <= 0);
 
@@ -487,6 +519,11 @@ public class AccountLedgerApplication {
         }
 
         //Displaying the ledger entries.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
         for (AccountLedger ledgerEntry : ledgerList) {
 
             System.out.printf("""
@@ -523,9 +560,15 @@ public class AccountLedgerApplication {
         }
 
         //Displaying the Deposits.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
+
         for (AccountLedger ledgerEntry : ledgerList) {
 
-            if (ledgerEntry.getAmount() >= 0) {
+            if (ledgerEntry.getAmount() > 0) {
                 System.out.printf("""
                                 %s | %s | %s | %s | %.2f
                                 """
@@ -561,6 +604,12 @@ public class AccountLedgerApplication {
         }
 
         //Displaying the payments.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
+
         for (AccountLedger ledgerEntry : ledgerList) {
 
             if (ledgerEntry.getAmount() < 0) {
@@ -635,6 +684,12 @@ public class AccountLedgerApplication {
         boolean found = false;
 
         //using a for loop to iterate through the ledgerList and check if the date matches the monthStart.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
+
         for (AccountLedger daySearchFilter : ledgerList) {
 
             //getting the day number from the date string and then splitting
@@ -724,6 +779,12 @@ public class AccountLedgerApplication {
         boolean found = false;
 
         //using a for loop to iterate through the ledgerList and check if the date matches the monthNumber.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
+
         for (AccountLedger daySearchFilter : ledgerList) {
 
             //getting the month number from the date string and then splitting
@@ -785,6 +846,12 @@ public class AccountLedgerApplication {
         boolean found = false;
 
         //using a for loop to iterate through the ledgerList and check if the date matches the yearStart.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
+
         for (AccountLedger yearSearchFilter : ledgerList) {
 
             //getting the year number from the date string and then splitting it to get the
@@ -837,6 +904,12 @@ public class AccountLedgerApplication {
         boolean found = false;
 
         //using a for loop to iterate through the ledgerList and check if the date matches the yearStart.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
+
         for (AccountLedger daySearchFilter : ledgerList) {
 
             //getting the year number from the date string and then splitting
@@ -888,10 +961,18 @@ public class AccountLedgerApplication {
         boolean found = false;
 
         //Using a for loop to search for entries in the ledger that are for the specified vendor.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
+
         for (AccountLedger vendorName : ledgerList) {
 
+
             //checking if the vendor name matches the vendor entered by the user.
-            if (vendorName.getVendor().equalsIgnoreCase(vendor)) {
+            if (vendorName.getVendor().toLowerCase().contains(vendor.toLowerCase())) {
+
 
                 //setting the boolean variable to true for the specified vendor.
                 found = true;
@@ -904,6 +985,7 @@ public class AccountLedgerApplication {
                         , vendorName.getDescription()
                         , vendorName.getVendor()
                         , vendorName.getAmount());
+
             }
         }
 
@@ -944,6 +1026,12 @@ public class AccountLedgerApplication {
                 + monthsAndTheirCorrespondingNumbers.get(monthEnd) + ".\n");
 
         //Using a for loop to search for entries in the ledger that are in the specified month range.
+        //Sort the ledger entries starting with the newest first before writing to the file
+        // by date and then by timestamp.
+        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                .thenComparing(AccountLedger::getTimestamp)
+                .reversed());
+
         for (AccountLedger monthSearchFilter : ledgerList) {
 
             //getting the month number from the date string and then splitting
