@@ -1,13 +1,11 @@
 package com.pluralsight;
 
 import java.io.*;
+
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class AccountLedgerApplication {
 
@@ -19,8 +17,8 @@ public class AccountLedgerApplication {
     static String readFileName;
     static int counter = 0;
     static ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneId.of("America/Chicago"));
-    static String currentDate = currentDateTime.toString();
-    static String currentTime = currentDateTime.toString();
+    static String currentDate;
+    static String currentTime;
     static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
     static DateTimeFormatter monthFormat = DateTimeFormatter.ofPattern("yyyy-MM-01");
@@ -53,6 +51,7 @@ public class AccountLedgerApplication {
                     L) View Ledger.
                     X) Exit.
                     """);
+
             System.out.print("Enter your choice: ");
             userInputString = userInput.nextLine().toUpperCase();
 
@@ -128,7 +127,8 @@ public class AccountLedgerApplication {
                     ledgerList.add(new AccountLedger(date, time, description, vendor, amount));
 
                 } else {
-                    System.out.println("Unformatted data in file cannot be loaded.");
+
+                    System.out.println("Unformatted data on line " + lineNumber + " data cannot be loaded.");
                     //I will come back here to make sure that the user sees the data and shows
                     // them how they are supposed to format it.
 
@@ -177,6 +177,7 @@ public class AccountLedgerApplication {
         }
         //Displaying an error message if there is an error saving the ledger.
         catch (IOException e) {
+
             System.out.println("Error saving ledger. Please check the file and try again.");
         }
         //Displaying an error message if there is an unexpected error.
@@ -219,17 +220,13 @@ public class AccountLedgerApplication {
         //My big while loop that will keep the user from exiting the application until they choose to.
         while (true) {
 
-            //Asking the user to enter the details of the deposit and then adding it to the ledgerList.
-            //below I'm getting the current date and time and formatting them into a string.
-            //so I can add them to the deposit automatically as the user enters the details.
-            currentTime = currentDateTime.format(timeFormat);
-            currentDate = currentDateTime.format(dateFormat);
-
             //Getting the user's input for the deposit details.
             //Using a do-while loop to validate the input.
             String description;
             String vendor;
             double amount;
+
+            //Asking the user to enter the details of the deposit and then adding it to the ledgerList.
 
             do {
 
@@ -242,8 +239,12 @@ public class AccountLedgerApplication {
                     System.out.println("\n⚠️ Description cannot be empty.");
                     System.out.println("Try again.\n");
                 }
+                else if (description.contains("|")) {
+                    System.out.println("\n⚠️ Cannot contain the '|' character.");
+                    description = "";
+                }
 
-            } while (description.isEmpty());
+            } while (description.isEmpty() || description.contains( "|" ) );
 
             do {
 
@@ -255,13 +256,18 @@ public class AccountLedgerApplication {
                     System.out.println("\n⚠️ Vendor name cannot be empty.");
                     System.out.println("Try again.\n");
                 }
+                else if (vendor.contains("|")) {
+                    System.out.println("\n⚠️ Cannot contain the '|' character.");
+                    vendor = "";
+                }
 
-            } while (vendor.isEmpty());
+            } while (vendor.isEmpty() || vendor.contains( "|" ) );
 
 
             do {
 
                 try {
+
                     System.out.print("Enter Amount: $");
                     amount = userInput.nextDouble();
                     userInput.nextLine();
@@ -283,6 +289,10 @@ public class AccountLedgerApplication {
                     amount = -1;
                 }
             } while (amount <= 0);
+
+            //Calling the nowTimeMethod method to get the current date and time.
+            //this fixes it so that the date and time are always displayed in the correct format.
+            nowDateTimeMethod();
 
             //displaying the deposit details to the user and asking for confirmation
             // before adding it to the ledgerList.
@@ -309,7 +319,7 @@ public class AccountLedgerApplication {
                 System.out.println("\nTransaction cancelled");
 
                 System.out.println("\nTry entering the information again.\n");
-                addDeposit();
+                continue;
             }
 
 
@@ -330,7 +340,7 @@ public class AccountLedgerApplication {
                 System.out.println("\nInvalid input. Please enter Y for Yes or N for No.");
 
                 System.out.println("\nTry entering the information again.\n");
-                addDeposit();
+
             }
         }
 
@@ -344,18 +354,13 @@ public class AccountLedgerApplication {
         //My big while loop that will keep the user from exiting the application until they choose to.
         while (true) {
 
-            //Asking the user to enter the details of the payment and then adding it to the ledgerList.
-            //below I'm getting the current date and time and formatting them into a string.
-            // so I can add them to the payment automatically as the user enters the details.
-            currentTime = currentDateTime.toLocalTime().format(timeFormat);
-            currentDate = currentDateTime.toLocalDate().format(dateFormat);
-
             //Getting the user's input for the payment details.
             //Using a do-while loop to validate the input.
             String description;
             String vendor;
             double amount;
 
+            //Asking the user to enter the details of the payment and then adding it to the ledgerList.
 
             do {
 
@@ -367,8 +372,12 @@ public class AccountLedgerApplication {
                     System.out.println("\n⚠️ Description cannot be empty.");
                     System.out.println("Try again.\n");
                 }
+                else if (description.contains("|")) {
+                    System.out.println("\n⚠️ Cannot contain the '|' character.");
+                    description = "";
+                }
 
-            } while (description.isEmpty());
+            } while (description.isEmpty() || description.contains( "|" ) );
 
             do {
 
@@ -380,8 +389,12 @@ public class AccountLedgerApplication {
                     System.out.println("\n⚠️ Vendor name cannot be empty.");
                     System.out.println("Try again.\n");
                 }
+                else if (vendor.contains("|")) {
+                    System.out.println("\n⚠️ Cannot contain the '|' character.");
+                    vendor = "";
+                }
 
-            } while (vendor.isEmpty());
+            } while (vendor.isEmpty() || vendor.contains( "|" ) );
 
             do {
 
@@ -408,6 +421,10 @@ public class AccountLedgerApplication {
                 }
             } while (amount <= 0);
 
+            //Calling the nowTimeMethod method to get the current date and time.
+            //this fixes it so that the date and time are always displayed in the correct format.
+            nowDateTimeMethod();
+
             //displaying the payment details to the user and asking for confirmation before
             // adding it to the ledgerList.
             System.out.printf("\nYou are making a payment to %s for $%.2f", vendor, amount);
@@ -433,7 +450,7 @@ public class AccountLedgerApplication {
                 System.out.println("\nTransaction cancelled");
 
                 System.out.println("\nTry entering the information again.\n");
-                makePayment();
+                continue;
             }
 
             //Giving the user the option to make another payment or exit the application.
@@ -453,7 +470,6 @@ public class AccountLedgerApplication {
                 System.out.println("\nInvalid input. Please enter Y for Yes or N for No.");
 
                 System.out.println("\nTry entering the information again.\n");
-                makePayment();
             }
         }
 
@@ -672,6 +688,9 @@ public class AccountLedgerApplication {
         //Letting the user know that they are viewing month-to-date report(s).
         System.out.println("\nDisplaying Month To Date Report(s).\n");
 
+        //calling the nowTimeMethod method to get the current date and time.
+        nowDateTimeMethod();
+
         //formatting the current date and time into a string.
         String monthStart = currentDateTime.format(monthFormat);
         currentDate = currentDateTime.format(dateFormat);
@@ -767,62 +786,117 @@ public class AccountLedgerApplication {
         System.out.println("\nDisplaying Previous Month Report(s).\n");
 
         //getting the month number from the current date and then formatting it into a string.
-        currentDate = currentDateTime.format(dateFormat);
-        monthsStrings();
-        int monthNumber = currentDateTime.getMonthValue();
+        nowDateTimeMethod();
 
-        //Letting the user know which month they are viewing.
-        System.out.println("You are viewing " + monthsAndTheirCorrespondingNumbers.get(monthNumber - 1) + "'s entries:");
+        //calling my HashMap method to match the month number to a string.
+        monthsStrings();
+
+        //getting the month number from the current date.
+        int monthNumber = currentDateTime.getMonthValue() - 1;
+        int yearNumber = currentDateTime.getYear() - 1;
 
         //setting the boolean variable to false to check if any entries are
         // found in the specified month range.
         boolean found = false;
 
-        //using a for loop to iterate through the ledgerList and check if the date matches the monthNumber.
-        //Sort the ledger entries starting with the newest first before writing to the file
-        // by date and then by timestamp.
-        ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
-                .thenComparing(AccountLedger::getTimestamp)
-                .reversed());
+        if (monthNumber == 0) {
 
-        for (AccountLedger daySearchFilter : ledgerList) {
+            System.out.println("You are viewing " + yearNumber + " " + monthsAndTheirCorrespondingNumbers.get(12) + "'s entries:");
 
-            //getting the month number from the date string and then splitting
-            // it to get the month part and then parsing it to an integer so we
-            // can compare it to the month number on record.
-            int currentYear = Integer.parseInt(daySearchFilter.getDate().split("-")[0]);
-            monthNumber = Integer.parseInt(daySearchFilter.getDate().split("-")[1]);
+            //using a for loop to iterate through the ledgerList and check if the date matches the monthNumber.
+            //Sort the ledger entries starting with the newest first before writing to the file
+            // by date and then by timestamp.
+            ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                    .thenComparing(AccountLedger::getTimestamp)
+                    .reversed());
 
-            //checking if the year is current with an if statement.
-            if (currentYear == currentDateTime.getYear()) {
+            for (AccountLedger daySearchFilter : ledgerList) {
+
+                //getting the month number from the date string and then splitting
+                // it to get the month part and then parsing it to an integer so we
+                // can compare it to the month number on record.
+                int currentYear = Integer.parseInt(daySearchFilter.getDate().split("-")[0]);
+                monthNumber = Integer.parseInt(daySearchFilter.getDate().split("-")[1]);
+
+                //checking if the year is current with an if statement.
+                if (currentYear == currentDateTime.getYear() - 1 ) {
 
 
-                //checking if the month number is in the specified range.
-                if (monthNumber == currentDateTime.getMonthValue() - 1) {
+                    //checking if the month number is in the specified range.
+                    if (monthNumber == 12) {
 
-                    //setting the boolean variable to true if any entries are found in the specified month range.
-                    found = true;
+                        //setting the boolean variable to true if any entries are found in the specified month range.
+                        found = true;
 
-                    //Printing the ledger entries that are in the specified month range.
-                    System.out.printf("""
-                                    %s | %s | %s | %s | %.2f
-                                    """
-                            , daySearchFilter.getDate()
-                            , daySearchFilter.getTimestamp()
-                            , daySearchFilter.getDescription()
-                            , daySearchFilter.getVendor()
-                            , daySearchFilter.getAmount());
+                        //Printing the ledger entries that are in the specified month range.
+                        System.out.printf("""
+                                        %s | %s | %s | %s | %.2f
+                                        """
+                                , daySearchFilter.getDate()
+                                , daySearchFilter.getTimestamp()
+                                , daySearchFilter.getDescription()
+                                , daySearchFilter.getVendor()
+                                , daySearchFilter.getAmount());
 
+                    }
                 }
+
             }
 
         }
-        //Letting the user know if no entries were found in the specified month range.
-        if (!found) {
+        else {
 
-            System.out.println("\nNo entries found in that range.");
 
+            //Letting the user know which month they are viewing.
+            System.out.println("You are viewing " + monthsAndTheirCorrespondingNumbers.get(monthNumber) + "'s entries:");
+
+            //using a for loop to iterate through the ledgerList and check if the date matches the monthNumber.
+            //Sort the ledger entries starting with the newest first before writing to the file
+            // by date and then by timestamp.
+            ledgerList.sort(Comparator.comparing(AccountLedger::getDate)
+                    .thenComparing(AccountLedger::getTimestamp)
+                    .reversed());
+
+            for (AccountLedger daySearchFilter : ledgerList) {
+
+                //getting the month number from the date string and then splitting
+                // it to get the month part and then parsing it to an integer so we
+                // can compare it to the month number on record.
+                int currentYear = Integer.parseInt(daySearchFilter.getDate().split("-")[0]);
+                monthNumber = Integer.parseInt(daySearchFilter.getDate().split("-")[1]);
+
+                //checking if the year is current with an if statement.
+                if (currentYear == currentDateTime.getYear()) {
+
+
+                    //checking if the month number is in the specified range.
+                    if (monthNumber == currentDateTime.getMonthValue() - 1) {
+
+                        //setting the boolean variable to true if any entries are found in the specified month range.
+                        found = true;
+
+                        //Printing the ledger entries that are in the specified month range.
+                        System.out.printf("""
+                                        %s | %s | %s | %s | %.2f
+                                        """
+                                , daySearchFilter.getDate()
+                                , daySearchFilter.getTimestamp()
+                                , daySearchFilter.getDescription()
+                                , daySearchFilter.getVendor()
+                                , daySearchFilter.getAmount());
+
+                    }
+                }
+
+            }
         }
+            //Letting the user know if no entries were found in the specified month range.
+            if (!found) {
+
+                System.out.println("\nNo entries found in that range.");
+
+            }
+
 
         System.out.println("\n");
 
@@ -1003,12 +1077,43 @@ public class AccountLedgerApplication {
 
         currentDate = currentDateTime.format(dateFormat);
 
-        System.out.print("\nEnter start Month(number): ");
-        int monthStart = userInput.nextInt();
+        int monthStart;
+        int monthEnd;
+        try {
 
-        System.out.print("Enter end Month(number): ");
-        int monthEnd = userInput.nextInt();
-        userInput.nextLine();
+            do {
+                System.out.print("\nEnter start Month(number): ");
+                monthStart = userInput.nextInt();
+
+                if (monthStart <= 0 || monthStart >= 13) {
+                    System.out.println("Invalid month. Must be 1-12.");
+                }
+
+            }while (monthStart <= 0 || monthStart >= 13);
+
+            do {
+
+                System.out.print("Enter end Month(number): ");
+                monthEnd = userInput.nextInt();
+                userInput.nextLine();
+
+                if (monthEnd <= 0 || monthEnd >= 13) {
+                    System.out.println("Invalid month. Must be 1-12.");
+                }
+
+            }while (monthEnd <= 0 || monthEnd >= 13);
+
+            if (monthStart > monthEnd) {
+                System.out.println("Start month cannot be greater than end month. Please try again.");
+                monthToMonthFilter();
+            }
+
+
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a number.");
+            userInput.nextLine();
+            return;
+        }
 
         //setting the boolean variable too false to check if any entries are
         // found in the specified month range.
@@ -1021,9 +1126,23 @@ public class AccountLedgerApplication {
         //Printing the month range that the user has entered in a nice format.
         //I used the HashMap to convert the month number to a string for the
         // user to see the month names instead of just the numbers.
-        System.out.println("\nDisplaying all ledger entries between "
-                + monthsAndTheirCorrespondingNumbers.get(monthStart) + " and "
-                + monthsAndTheirCorrespondingNumbers.get(monthEnd) + ".\n");
+        if (monthStart == monthEnd) {
+
+
+            System.out.println("\nDisplaying all ledger entries for "
+                    + monthsAndTheirCorrespondingNumbers.get(monthStart) + ".\n");
+
+            System.out.println("\nYou did the wrong input for the month range, but I always have one up my sleeve.");
+
+        }
+        else {
+
+            System.out.println("\nDisplaying all ledger entries between "
+                    + monthsAndTheirCorrespondingNumbers.get(monthStart) + " and "
+                    + monthsAndTheirCorrespondingNumbers.get(monthEnd) + ".\n");
+
+
+        }
 
         //Using a for loop to search for entries in the ledger that are in the specified month range.
         //Sort the ledger entries starting with the newest first before writing to the file
@@ -1032,42 +1151,97 @@ public class AccountLedgerApplication {
                 .thenComparing(AccountLedger::getTimestamp)
                 .reversed());
 
-        for (AccountLedger monthSearchFilter : ledgerList) {
+        if (monthStart == monthEnd) {
 
-            //getting the month number from the date string and then splitting
-            // it to get the month part and then parsing it to an integer so we
-            // can compare it to the monthStart and monthEnd.
-            int monthNumber = Integer.parseInt(monthSearchFilter.getDate().split("-")[1]);
-            int currentYear = Integer.parseInt(monthSearchFilter.getDate().split("-")[0]);
+            for (AccountLedger monthSearchFilter : ledgerList) {
 
-            if (currentYear == currentDateTime.getYear()) {
+                //getting the month number from the date string and then splitting
+                // it to get the month part and then parsing it to an integer so we
+                // can compare it to the monthStart and monthEnd.
+                int monthNumber = Integer.parseInt(monthSearchFilter.getDate().split("-")[1]);
+                int currentYear = Integer.parseInt(monthSearchFilter.getDate().split("-")[0]);
 
-                //checking if the month number is in the specified range.
-                if (monthNumber >= monthStart && monthNumber <= monthEnd) {
+                if (currentYear == currentDateTime.getYear()) {
 
-                    //setting the boolean variable to true if any entries are found in the specified month range.
-                    found = true;
+                    //checking if the month number is in the specified range.
+                    if (monthNumber >= monthStart && monthNumber <= monthEnd) {
 
-                    //Printing the ledger entries that are in the specified month range.
-                    System.out.printf("""
-                                    %s | %s | %s | %s | %.2f
-                                    """
-                            , monthSearchFilter.getDate()
-                            , monthSearchFilter.getTimestamp()
-                            , monthSearchFilter.getDescription()
-                            , monthSearchFilter.getVendor()
-                            , monthSearchFilter.getAmount());
+                        //setting the boolean variable to true if any entries are found in the specified month range.
+                        found = true;
 
+                        //Printing the ledger entries that are in the specified month range.
+                        System.out.printf("""
+                                        %s | %s | %s | %s | %.2f
+                                        """
+                                , monthSearchFilter.getDate()
+                                , monthSearchFilter.getTimestamp()
+                                , monthSearchFilter.getDescription()
+                                , monthSearchFilter.getVendor()
+                                , monthSearchFilter.getAmount());
+
+                    }
                 }
-            }
 
+            }
+        }
+        else {
+            for (AccountLedger monthSearchFilter : ledgerList) {
+
+                //getting the month number from the date string and then splitting
+                // it to get the month part and then parsing it to an integer so we
+                // can compare it to the monthStart and monthEnd.
+                int monthNumber = Integer.parseInt(monthSearchFilter.getDate().split("-")[1]);
+                int currentYear = Integer.parseInt(monthSearchFilter.getDate().split("-")[0]);
+
+                if (currentYear == currentDateTime.getYear()) {
+
+                    //checking if the month number is in the specified range.
+                    if (monthNumber >= monthStart && monthNumber <= monthEnd) {
+
+                        //setting the boolean variable to true if any entries are found in the specified month range.
+                        found = true;
+
+                        //Printing the ledger entries that are in the specified month range.
+                        System.out.printf("""
+                                        %s | %s | %s | %s | %.2f
+                                        """
+                                , monthSearchFilter.getDate()
+                                , monthSearchFilter.getTimestamp()
+                                , monthSearchFilter.getDescription()
+                                , monthSearchFilter.getVendor()
+                                , monthSearchFilter.getAmount());
+
+                    }
+                }
+
+            }
         }
         //Letting the user know if no entries were found in the specified month range.
         if (!found) {
 
             System.out.println("\nNo entries found that range.");
 
+            System.out.println("\nWanna give it another try? (Y/N): ");
+            String userInputString = userInput.nextLine();
+
+            if (userInputString.equalsIgnoreCase("Y") || userInputString.equalsIgnoreCase("yes")) {
+
+                monthStart = 0;
+                monthEnd = 0;
+                monthToMonthFilter();
+            } else {
+                System.out.println("\nReturning to the Reports Menu...");
+            }
+
         }
 
+    }
+    public static void nowDateTimeMethod() {
+
+        //below I'm getting the current date and time and formatting them into a string.
+        //so I can add them to the deposit automatically as the user enters the details.
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Chicago"));
+        currentTime = now.format(timeFormat);
+        currentDate = now.format(dateFormat);
     }
 }

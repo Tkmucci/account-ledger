@@ -1,4 +1,6 @@
 Date|Time|Description|Vendor|Amount
+2026-04-30|17:10:08|timestamp check|me myself and I|17.12
+2026-04-30|17:10:08|another timestamp|bledzva|17.15
 2026-04-29|19:11:08|tv purchase|Walmart|-745.98
 2026-04-29|19:09:24|car sale|finacci|1123.00
 2026-04-27|09:00:00|Coffee|Starbucks|-5.00
@@ -15,3 +17,4 @@ Date|Time|Description|Vendor|Amount
 2025-03-16|09:00:00|Office chair|Staples|-199.99
 2023-04-15|11:15:00|Invoice 1001 paid|Joe|1500.00
 2023-04-15|10:13:25|ergonomic keyboard|Amazon|-89.50
+2023-04-14|16:00:00|Coffee|McDonald's Chevron|-5.00
